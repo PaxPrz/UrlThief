@@ -1,12 +1,12 @@
 from typing import Tuple
 
-SLEEP_TIME = 1 #seconds
+SLEEP_TIME: float = 1 #seconds
 
 BROWSERS: Tuple[str, ...] = ("Mozilla Firefox", "Google Chrome", "Edge", "Opera")
 BROWSER_PS_NAMES: Tuple[str, ...] = ("firefox", "chrome", "edge", "opera", "application") # 'application' if for edge
 
-SLEEP_TIME_KEYS = 0.05 #seconds
-SLEEP_TIME_COPY = 0.1 #seconds
+SLEEP_TIME_KEYS: float = 0.05 #seconds
+SLEEP_TIME_COPY: float = 0.1 #seconds
 
 BROWSER_ENDS: Tuple[str, ...] = ('Mozilla Firefox', 'Google Chrome', 'Opera', 'Brave')
 NEW_TABS: Tuple[str, ...] = ('New Tab - Google Chrome', 'Mozilla Firefox', 'Untitled - Brave', 'New Tab - Brave')

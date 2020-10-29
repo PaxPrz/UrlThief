@@ -13,12 +13,30 @@ except ImportError:
 
 last_win = ''
 
-def get_window_name():
+def get_window_name()-> Tuple[str, int]:
+    '''
+        Get the foreground window and returns its name and handler
+
+        Returns:
+            win_name (str): Title of current active window
+            window (int): Window Handle for the active window
+    '''
     window = win.GetForegroundWindow()
     win_name = win.GetWindowText(window)
     return win_name, window
 
-def get_url(win_name, window):
+def get_url(win_name:str, window:int)-> Union[str, None]:
+    '''
+        Gets the URL if the current active window is browser
+        Checks the process ID of current active window to determine if window is a browser process or not
+
+        Args:
+            win_name (str): Name/Title of currently foreground window (to check if its browser)
+            window (int): Window handler ID
+            
+        Returns:
+            url (str): If None is returned, the active window is not a browser
+    '''
     global last_win
     PROCESS_IS_BROWSER: bool = False
     if any(browser in win_name for browser in BROWSERS):
@@ -50,7 +68,14 @@ def get_url(win_name, window):
                 return url
     return None
 
-def get_window_and_url():
+def get_window_and_url()-> Tuple[str, Union[str, None]]:
+    '''
+        Returns the active window name and URL if it's a browser
+
+        Returns:
+            win_name (str): Title of currently active window
+            url (str): If None is returned the active window is not a Browser
+    '''
     win_name, window = get_window_name()
     url = get_url(win_name, window)
     return win_name, url
