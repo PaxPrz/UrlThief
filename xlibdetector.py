@@ -1,15 +1,17 @@
 #!/usr/bin/python3.8
 import Xlib
 import Xlib.display
-import clipboard
+import pyperclip
 from pynput.keyboard import Key, Controller
 from time import sleep
 try:
     from utils.cache import lru
     from utils.constants import BROWSER_ENDS, CHROME, FIREFOX, NEW_TABS, SLEEP_TIME_COPY, SLEEP_TIME_KEYS
+    from utils.exceptions import CannotWorkOnThisSystem
 except ImportError:
     from .utils.cache import lru
     from .utils.constants import BROWSER_ENDS, CHROME, FIREFOX, NEW_TABS, SLEEP_TIME_COPY, SLEEP_TIME_KEYS
+    from .utils.exceptions import CannotWorkOnThisSystem
 
 def go_url_bar(sleeptime):
     keyboard.press(Key.ctrl)
@@ -74,7 +76,10 @@ def get_url(window_name):
                 data = lru[window_name]
                 # print('  [u] '+data+'\n')
             except KeyError:
-                backup_clipboard = clipboard.paste()
+                try:
+                    backup_clipboard = pyperclip.paste()
+                except pyperclip.PyperclipException:
+                    raise CannotWorkOnThisSystem
                 go_url_bar(SLEEP_TIME_KEYS)
                 copy_text(SLEEP_TIME_COPY)
                 if is_firefox:
@@ -82,8 +87,8 @@ def get_url(window_name):
                 else:
                     f10_out_of_url(SLEEP_TIME_KEYS)
                     f10_out_of_url(SLEEP_TIME_KEYS)
-                data = clipboard.paste()
-                clipboard.copy(backup_clipboard)
+                data = pyperclip.paste()
+                pyperclip.copy(backup_clipboard)
                 if ' ' in data:
                     return None
                 lru[window_name] = data
