@@ -1,0 +1,20 @@
+Metadata-Version: 1.2
+Name: UrlThief
+Version: 0.1.0
+Summary: Captures URL and window name from famous browsers
+Home-page: https://github.com/PaxPrz/UrlThief
+Author: PaxPrz
+Author-email: paxprajapati@gmail.com
+License: UNKNOWN
+Description: # URLThief
+        
+        ============================
+        
+        ## Introduction
+        
+        This module will capture the URL from active browser from Firefox, Chrome, Brave, Opera and Edge browsers. It is currently supported in Windows operating system with **uiautomation** supported; and Linux operating system working with **Xlib** Desktop manager.
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Dependent
+Requires-Python: >=3.8
