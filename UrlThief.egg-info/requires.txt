@@ -1,5 +1,0 @@
-pylru<2,>=1.2.0
-typing<4,>=3.7.4.3
-python-xlib<1,>=0.28
-clipboard<1,>=0.0.4
-pynput<2,>=1.7.1

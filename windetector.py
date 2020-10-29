@@ -27,13 +27,13 @@ def get_url(win_name, window):
             try:
                 url = lru[win_name]
             except KeyError:            
-                url = ''
+                url = None
                 browserControl = auto.ControlFromHandle(window)
                 ps_id = browserControl.ProcessId
                 ps = psutil.Process(pid=ps_id)
                 if any(name in ps.name().lower() for name in BROWSER_PS_NAMES):
                     name_regex = r'.*[Aa]{0,1}ddress(?! bar)'
-                    with suppress(LookupError):
+                    with suppress(LookupError, AttributeError):
                         #for i in range(1,4):
                         #    edit = browserControl.EditControl(foundIndex=i)
                         #    if edit.Name.lower().find('address field' if win_name.endswith('Opera') else 'address') >= 0:
