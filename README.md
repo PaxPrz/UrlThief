@@ -12,12 +12,12 @@ This module will capture the URL from active browser from Firefox, Chrome, Brave
 
 ## Usage
 
-`
+```
 import UrlThief
 while True:
     window_name, url = get_window_and_url()
-    sleep(SLEEPTIME)
-`
+    sleep(SLEEPTIME) # sleep as necessary or use event listener
+```
 
 ## Console Usage
 
