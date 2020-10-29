@@ -4,8 +4,12 @@ import uiautomation as auto
 from contextlib import suppress
 import psutil
 from typing import Tuple, List, Any, Union
-from utils.cache import lru
-from utils.constants import SLEEP_TIME, BROWSERS, BROWSER_PS_NAMES
+try:
+    from utils.cache import lru
+    from utils.constants import SLEEP_TIME, BROWSERS, BROWSER_PS_NAMES
+except ImportError:
+    from .utils.cache import lru
+    from .utils.constants import SLEEP_TIME, BROWSERS, BROWSER_PS_NAMES
 
 last_win = ''
 

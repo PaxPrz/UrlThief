@@ -1,12 +1,15 @@
 #!/usr/bin/python3.8
 import Xlib
 import Xlib.display
-import pylru
 import clipboard
 from pynput.keyboard import Key, Controller
 from time import sleep
-from utils.cache import lru
-from utils.constants import BROWSER_ENDS, CHROME, FIREFOX, NEW_TABS, SLEEP_TIME_COPY, SLEEP_TIME_KEYS
+try:
+    from utils.cache import lru
+    from utils.constants import BROWSER_ENDS, CHROME, FIREFOX, NEW_TABS, SLEEP_TIME_COPY, SLEEP_TIME_KEYS
+except ImportError:
+    from .utils.cache import lru
+    from .utils.constants import BROWSER_ENDS, CHROME, FIREFOX, NEW_TABS, SLEEP_TIME_COPY, SLEEP_TIME_KEYS
 
 def go_url_bar(sleeptime):
     keyboard.press(Key.ctrl)
@@ -32,7 +35,7 @@ def f10_out_of_url(sleeptime):
     sleep(sleeptime)
     keyboard.release(Key.f10)
 
-disp = Xlib.display.Display()
+disp = Xlib.display.Display() # import this disp too, and add dips.next_event() in your loop
 root = disp.screen().root
 
 NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
@@ -79,15 +82,18 @@ def get_url(window_name):
                 else:
                     f10_out_of_url(SLEEP_TIME_KEYS)
                     f10_out_of_url(SLEEP_TIME_KEYS)
-                lru[window_name] = clipboard.paste()
+                data = clipboard.paste()
                 clipboard.copy(backup_clipboard)
-                data = lru.peek(window_name)
+                if ' ' in data:
+                    return None
+                lru[window_name] = data
                 # print('  [u] '+lru.peek(window_name)+'\n')
             return data
     return None
 
 def get_window_and_url():
     window_name = get_window_name()
+    url = None
     if window_name:
         url = get_url(window_name)
     return window_name, url
