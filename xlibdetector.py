@@ -5,17 +5,8 @@ import pylru
 import clipboard
 from pynput.keyboard import Key, Controller
 from time import sleep
-
-disp = Xlib.display.Display()
-root = disp.screen().root
-
-NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
-NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
-
-root.change_attributes(event_mask=Xlib.X.FocusChangeMask)
-
-last_fetched = None
-keyboard = Controller()
+from utils.cache import lru
+from utils.constants import BROWSER_ENDS, CHROME, FIREFOX, NEW_TABS, SLEEP_TIME_COPY, SLEEP_TIME_KEYS
 
 def go_url_bar(sleeptime):
     keyboard.press(Key.ctrl)
@@ -41,47 +32,71 @@ def f10_out_of_url(sleeptime):
     sleep(sleeptime)
     keyboard.release(Key.f10)
 
-lru = pylru.lrucache(size=20)
-SLEEP_TIME = 0.05 #sec
-SLEEP_TIME_COPY = 0.1 #seconds
-BROWSER_ENDS = (b'Mozilla Firefox', b'Google Chrome', b'Opera', b'Brave')
-NEW_TABS = (b'New Tab - Google Chrome', b'Mozilla Firefox', b'Untitled - Brave', b'New Tab - Brave')
-FIREFOX = (b'Mozilla Firefox')
-CHROME = (b'Google Chrome', b'Opera', b'Brave')
+disp = Xlib.display.Display()
+root = disp.screen().root
+
+NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
+NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
+
+root.change_attributes(event_mask=Xlib.X.FocusChangeMask)
+
+last_fetched = ''
+
+keyboard = Controller()
+
 backup_clipboard = None
 
-while True:
+def get_window_name():
     try:
         window_id = root.get_full_property(NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
         window = disp.create_resource_object('window', window_id)
         window.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
         # window_name = window.get_full_property(NET_WM_NAME, 0).value
-        window_name = window.get_full_text_property(NET_WM_NAME).encode()
+        window_name = window.get_full_text_property(NET_WM_NAME)
     except Xlib.error.XError: #simplify dealing with BadWindow
         window_name = None
-        continue
+    return window_name
+
+def get_url(window_name):
+    global last_fetched
     if window_name != last_fetched:
         last_fetched = window_name
-        print('[w] '+window_name.decode() if window_name else '')
+        # print('[w] '+window_name if window_name else '')
+        url = None
         is_firefox = False
         if window_name \
         and ((is_firefox:= window_name.endswith(FIREFOX)) or window_name.endswith(CHROME)) \
         and not any(map(lambda x: x==window_name, NEW_TABS)):
             try:
                 data = lru[window_name]
-                print('  [u] '+data+'\n')
+                # print('  [u] '+data+'\n')
             except KeyError:
                 backup_clipboard = clipboard.paste()
-                go_url_bar(SLEEP_TIME)
+                go_url_bar(SLEEP_TIME_KEYS)
                 copy_text(SLEEP_TIME_COPY)
                 if is_firefox:
-                    f6_out_of_url(SLEEP_TIME)
+                    f6_out_of_url(SLEEP_TIME_KEYS)
                 else:
-                    f10_out_of_url(SLEEP_TIME)
-                    f10_out_of_url(SLEEP_TIME)
+                    f10_out_of_url(SLEEP_TIME_KEYS)
+                    f10_out_of_url(SLEEP_TIME_KEYS)
                 lru[window_name] = clipboard.paste()
                 clipboard.copy(backup_clipboard)
-                print('  [u] '+lru.peek(window_name)+'\n')
-    event = disp.next_event()
+                data = lru.peek(window_name)
+                # print('  [u] '+lru.peek(window_name)+'\n')
+            return data
+    return None
 
+def get_window_and_url():
+    window_name = get_window_name()
+    if window_name:
+        url = get_url(window_name)
+    return window_name, url
 
+if __name__ == "__main__":
+    print("Searching for Browsers!")
+    while True:
+        win_name, url = get_window_and_url()
+        if url:
+            print('[w] '+win_name if win_name else '')
+            print('  [u] '+url+'\n')
+        event = disp.next_event()
