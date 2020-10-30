@@ -45,7 +45,7 @@ def get_url(win_name:str, window:int)-> Union[str, None]:
             try:
                 url = lru[win_name]
             except KeyError:            
-                url = None
+                url = ''
                 browserControl = auto.ControlFromHandle(window)
                 ps_id = browserControl.ProcessId
                 ps = psutil.Process(pid=ps_id)
