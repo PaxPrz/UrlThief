@@ -2,7 +2,7 @@ from typing import Tuple
 
 SLEEP_TIME: float = 1 #seconds
 
-BROWSERS: Tuple[str, ...] = ("Mozilla Firefox", "Google Chrome", "Edge", "Opera", "Brave")
+BROWSERS: Tuple[str, ...] = ("Mozilla Firefox", "Google Chrome", "Edge", "Opera", "Brave", "Chromium")
 BROWSER_PS_NAMES: Tuple[str, ...] = ("firefox", "chrome", "edge", "opera", "brave", "application") # 'application' for edge
 
 SLEEP_TIME_KEYS: float = 0.05 #seconds
